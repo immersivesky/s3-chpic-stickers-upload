@@ -21,21 +21,24 @@ object_name = input("Как назовёте объект в хранилище?
 
 sticker_data = "https://chpic.su/_data/stickers/" + sticker_name[0].lower() + '/' + sticker_name + '/' + sticker_name + '_'
 def upload(object_name, content, number):
-    print(stickers_bucket.put_object(
+    stickers_bucket.put_object(
         ACL="public-read",
-        Key=object_name + "/default/" + str(number) + '.webp',
+        Key=object_name + "/webp/" + str(number) + '.webp',
         Body=content,
-    ))
+    )
 
 for i in range(count):
     i += 1
 
     if i < 10:
         id = "00" + str(i)
-    elif i >= 10:
+    elif i >= 10 and i < 100:
         id = "0" + str(i)
-    else:
-        id = str(id)
+    elif i >= 100:
+        id = str(i)
 
-    content = requests.get(sticker_data + id + ".webp").content
-    upload(object_name, content, i)
+    sticker_url = sticker_data + id + ".webp"
+    response = requests.get(sticker_url)
+
+    print(sticker_url + " " + str(response.status_code))
+    upload(object_name, response.content, i)
